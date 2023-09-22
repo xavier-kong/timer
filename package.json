@@ -12,6 +12,7 @@
   "dependencies": {
     "million": "^2.6.0",
     "react": "^18.2.0",
+    "react-countdown": "^2.3.5",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
@@ -30,6 +31,6 @@
     "vite": "^4.4.5"
   },
   "workspaces": [
-    "workspace-a"
+    "./"
   ]
 }
