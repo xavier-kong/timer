@@ -52,7 +52,7 @@ function AddCountdownDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">Add Countdown</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Add Countdown</DialogTitle>
         </DialogHeader>
@@ -83,7 +83,7 @@ function AddCountdownDialog() {
             <Label htmlFor="username" className="text-right">
               Repeat
             </Label>
-            <Checkbox id="terms1" onCheckedChange={() => {setRepeat(!repeat)}} checked={repeat} />
+            <Checkbox id="terms1" onCheckedChange={() => {setRepeat(!repeat)}} checked={repeat} className="" />
           </div>
           {
             repeat 
@@ -94,13 +94,18 @@ function AddCountdownDialog() {
                   </Label>
                   <div className="flex flex-row">
                     {
-                      daysOfWeek.map(day => (
-                        <div className={`mx-1 border-2 border-white min-w-max h-8 rounded-full flex justify-center items-center p-2 ${day.isSelected ? 'bg-black text-white' : null}`}>
-                          <p>
+                      daysOfWeek.map((day, idx) => (
+                        <div 
+                          className={`mx-1 ${day.isSelected ? 'border-4' : 'border-2'} border-white h-8 w-max rounded-full flex justify-center items-center p-2`} 
+                          onClick={() => {
+                            const copy = [...daysOfWeek];
+                            copy[idx].isSelected = !copy[idx].isSelected;
+                            setDaysOfWeek(copy);
+                          }}>
+                          <p className="text-white">
                             {day.label}
                           </p>
                         </div>
-
                       ))
                     }
                   </div>
