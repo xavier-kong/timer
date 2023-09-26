@@ -39,7 +39,7 @@ const daysOfWeekThing = [
   { label: 'T', isSelected: false },
   { label: 'F', isSelected: false },
   { label: 'S', isSelected: false },
-  { label: 'S', isSelected: true },
+  { label: 'S', isSelected: false },
 ] as DaysOfWeekThing;
 
 function AddCountdownDialog() {
@@ -96,7 +96,7 @@ function AddCountdownDialog() {
                     {
                       daysOfWeek.map((day, idx) => (
                         <div 
-                          className={`mx-1 ${day.isSelected ? 'border-4' : 'border-2'} border-white h-8 w-max rounded-full flex justify-center items-center p-2`} 
+                          className={`mx-1 ${day.isSelected ? 'border-b-4' : null} border-white h-8 w-max flex justify-center items-center p-2`} 
                           onClick={() => {
                             const copy = [...daysOfWeek];
                             copy[idx].isSelected = !copy[idx].isSelected;
@@ -123,6 +123,7 @@ function AddCountdownDialog() {
 }
 
 function App() {
+
   return (
     <div className="min-h-screen min-w-screen bg-slate-900 justify-center items-center flex flex-col gap-16" >
       <div>
