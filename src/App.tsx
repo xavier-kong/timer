@@ -42,9 +42,10 @@ const daysOfWeekThing = [
   { label: 'S', isSelected: false },
 ] as DaysOfWeekThing;
 
-function AddCountdownDialog() {
+function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => void }) {
   const [repeat, setRepeat] = useState<boolean>(false);
   const [countdownName, setCountdownName] = useState<string>('');
+  const [countdownTime, setCountdownTime] = useState<string>('');
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeekThing>(daysOfWeekThing);
 
   return (
@@ -74,7 +75,8 @@ function AddCountdownDialog() {
             </Label>
             <Input
               id="username"
-              defaultValue="@peduarte"
+              value={countdownTime}
+              onChange={(e) => setCountdownTime(e.currentTarget.value)}
               className="col-span-3"
               type="time"
             />
@@ -114,7 +116,19 @@ function AddCountdownDialog() {
           }
         </div>
         <DialogFooter>
-          <Button type="submit">Add Countdown</Button>
+          <Button type="submit" onClick={() => {
+            const body = {
+              name: countdownName,
+              time: countdownTime,
+              repeat: repeat
+            } as TimerBody;
+
+            if (repeat) {
+              body.repeatDays = daysOfWeek.map(day => day.isSelected);
+            }
+
+            addDialog(body);
+          }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -122,7 +136,28 @@ function AddCountdownDialog() {
   )
 }
 
+interface TimerBody {
+  name: string;
+  repeatDays?: boolean[];
+  time: string;
+  repeat: boolean;
+}
+
 function App() {
+
+  const addDialog = (body: TimerBody) => {
+    const existingDataFromStorage = localStorage.getItem('timer');
+
+    console.log('exd', existingDataFromStorage)
+    let toAdd = [];
+    if (existingDataFromStorage) {
+      toAdd = JSON.parse(existingDataFromStorage);
+    }
+
+    toAdd.push(body);
+
+    localStorage.setItem('timer', JSON.stringify(toAdd));
+  }
 
   return (
     <div className="min-h-screen min-w-screen bg-slate-900 justify-center items-center flex flex-col gap-16" >
@@ -135,7 +170,8 @@ function App() {
         date={Date.now() + 10000}
         renderer={renderer}
       />
-      <AddCountdownDialog />
+      <AddCountdownDialog addDialog={addDialog} />
+      {localStorage.getItem('timer')}
     </div>
   )
 }
