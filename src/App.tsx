@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Checkbox } from "@/components/ui/checkbox"
 
 const Completionist = () => <span>You are good to go!</span>;
@@ -47,10 +47,11 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
   const [countdownName, setCountdownName] = useState<string>('');
   const [countdownTime, setCountdownTime] = useState<string>('');
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeekThing>(daysOfWeekThing);
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={() => setOpen(!open)}>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
         <Button variant="outline">Add Countdown</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
@@ -128,7 +129,8 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
             }
 
             addDialog(body);
-          }}>Add Countdown</Button>
+            setOpen(false);
+            }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -144,19 +146,28 @@ interface TimerBody {
 }
 
 function App() {
+  const [timers, setTimers] = useState<TimerBody[]>([]);
 
-  const addDialog = (body: TimerBody) => {
+  const fetchExistingTimers = () => {
     const existingDataFromStorage = localStorage.getItem('timer');
-
-    console.log('exd', existingDataFromStorage)
-    let toAdd = [];
+    let timers = [];
     if (existingDataFromStorage) {
-      toAdd = JSON.parse(existingDataFromStorage);
+      timers = JSON.parse(existingDataFromStorage);
     }
 
-    toAdd.push(body);
+    return timers;
+  }
 
+  useEffect(() => {
+    const timers = fetchExistingTimers();
+    setTimers(timers);
+  }, [])
+
+  const addDialog = (body: TimerBody) => {
+    const toAdd = fetchExistingTimers();
+    toAdd.push(body);
     localStorage.setItem('timer', JSON.stringify(toAdd));
+    setTimers(toAdd);
   }
 
   return (
@@ -172,6 +183,8 @@ function App() {
       />
       <AddCountdownDialog addDialog={addDialog} />
       {localStorage.getItem('timer')}
+
+      <Button onClick={() => localStorage.removeItem('timer')}>Clear</Button>
     </div>
   )
 }
