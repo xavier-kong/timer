@@ -145,16 +145,43 @@ interface TimerBody {
   repeat: boolean;
 }
 
+function sortTimers(a: TimerBody, b: TimerBody) {
+  const aParts = a.time.split(':');
+  const bParts = b.time.split(':');
+
+  const aHours = parseInt(aParts[0]);
+
+  const bHours = parseInt(bParts[0]);
+
+  if (aHours < bHours) {
+    return -1;
+  } else if (aHours > bHours) {
+    return 1;
+  } else {
+    const aMinutes = parseInt(aParts[1]);
+    const bMinutes = parseInt(bParts[1]);
+
+    if (aMinutes < bMinutes) {
+      return -1;
+    } else if (aMinutes > bMinutes) {
+      return 1;
+    }
+  }
+
+  return -1
+}
+
 function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
 
   const fetchExistingTimers = () => {
     const existingDataFromStorage = localStorage.getItem('timer');
-    let timers = [];
+    let timers = [] as TimerBody[];
     if (existingDataFromStorage) {
       timers = JSON.parse(existingDataFromStorage);
     }
 
+    timers.sort(sortTimers);
     return timers;
   }
 
@@ -165,6 +192,7 @@ function App() {
 
   const addDialog = (body: TimerBody) => {
     const toAdd = fetchExistingTimers();
+    toAdd.sort(sortTimers)
     toAdd.push(body);
     localStorage.setItem('timer', JSON.stringify(toAdd));
     setTimers(toAdd);
