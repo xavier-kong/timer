@@ -130,7 +130,7 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
 
             addDialog(body);
             setOpen(false);
-            }}>Add Countdown</Button>
+          }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -143,6 +143,15 @@ interface TimerBody {
   repeatDays?: boolean[];
   time: string;
   repeat: boolean;
+}
+
+function getHoursMinutesFromTime(time: string) {
+  const parts = time.split(':');
+  const hours = parseInt(parts[0]);
+  const minutes = parseInt(parts[1]);
+  return {
+    hours, minutes
+  };
 }
 
 function sortTimers(a: TimerBody, b: TimerBody) {
@@ -169,6 +178,33 @@ function sortTimers(a: TimerBody, b: TimerBody) {
   }
 
   return -1
+}
+
+function orderByOperationalTime(timers: TimerBody[]) {
+  if (timers.length <= 1) {
+    return timers;
+  }
+
+  const currDate = new Date();
+  const currDateHours = currDate.getHours();
+  const currDateMinutes = currDate.getMinutes();
+
+  const { hours: firstHours, minutes: firstMinutes } = getHoursMinutesFromTime(timers[0].time);
+  const { hours: lastHours, minutes: lasMinutes } = getHoursMinutesFromTime(timers[timers.length - 1].time);
+
+  if (currDateHours < firstHours 
+    || currDateHours === firstHours && currDateMinutes <= firstMinutes
+    || currDateHours > lastHours
+    || currDateHours === firstHours && currDateMinutes >= lasMinutes
+  ) {
+    return timers;
+  }
+
+  let idx = 0;
+
+
+
+
 }
 
 function App() {
@@ -210,9 +246,9 @@ function App() {
         renderer={renderer}
       />
       <AddCountdownDialog addDialog={addDialog} />
-      {localStorage.getItem('timer')}
+      {JSON.stringify(timers)}
 
-      <Button onClick={() => localStorage.removeItem('timer')}>Clear</Button>
+      <Button onClick={() => { localStorage.removeItem('timer'); setTimers([]); }}>Clear</Button>
     </div>
   )
 }
