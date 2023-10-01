@@ -200,11 +200,21 @@ function orderByOperationalTime(timers: TimerBody[]) {
     return timers;
   }
 
-  let idx = 0;
+  const before: TimerBody[] = [];
+  const after: TimerBody[] = [];
 
+  for (let i = 0; i < timers.length; i++) {
+    const { hours, minutes } = getHoursMinutesFromTime(timers[i].time);
+    if (hours < currDateHours || hours === currDateHours && minutes < currDateMinutes) {
+      before.push(timers[i]);
+    } else if (hours > currDateHours || hours === currDateHours && minutes > currDateMinutes) {
+      after.push(timers[i]);
+    } else {
+      before.push(timers[i]);
+    }
+  }
 
-
-
+  return after.concat(before);
 }
 
 function App() {
@@ -223,7 +233,8 @@ function App() {
 
   useEffect(() => {
     const timers = fetchExistingTimers();
-    setTimers(timers);
+    const orderedTimers = orderByOperationalTime(timers);
+    setTimers(orderedTimers);
   }, [])
 
   const addDialog = (body: TimerBody) => {
@@ -231,7 +242,8 @@ function App() {
     toAdd.sort(sortTimers)
     toAdd.push(body);
     localStorage.setItem('timer', JSON.stringify(toAdd));
-    setTimers(toAdd);
+    const orderedTimers = orderByOperationalTime(toAdd);
+    setTimers(orderedTimers);
   }
 
   return (
