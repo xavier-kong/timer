@@ -42,6 +42,15 @@ const daysOfWeekThing = [
   { label: 'S', isSelected: false },
 ] as DaysOfWeekThing;
 
+const testIfCurrentDay = (timer: TimerBody) => {
+  const currDate = new Date();
+  const currDay = currDate.getDay() - 1; // our days array is zero indexed
+  if (timer.repeat) {
+    return timer.repeatDays?.[currDay];
+  }
+  return false;
+}
+
 function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => void }) {
   const [repeat, setRepeat] = useState<boolean>(false);
   const [countdownName, setCountdownName] = useState<string>('');
@@ -49,8 +58,18 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeekThing>(daysOfWeekThing);
   const [open, setOpen] = useState<boolean>(false);
 
+  const clearInput = () => {
+    setRepeat(false);
+    setCountdownName('');
+    setCountdownTime('');
+    setDaysOfWeek(daysOfWeekThing);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={() => setOpen(!open)}>
+    <Dialog open={open} onOpenChange={() => { 
+      setOpen(!open); 
+      clearInput();
+    }}>
       <DialogTrigger asChild onClick={() => setOpen(true)}>
         <Button variant="outline">Add Countdown</Button>
       </DialogTrigger>
@@ -130,6 +149,7 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
 
             addDialog(body);
             setOpen(false);
+            clearInput();
           }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
@@ -217,23 +237,24 @@ function orderByOperationalTime(timers: TimerBody[]) {
   return after.concat(before);
 }
 
+const fetchExistingTimers = () => {
+  const existingDataFromStorage = localStorage.getItem('timer');
+  let timers = [] as TimerBody[];
+  if (existingDataFromStorage) {
+    timers = JSON.parse(existingDataFromStorage);
+  }
+
+  timers.sort(sortTimers);
+  return timers;
+}
+
 function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
 
-  const fetchExistingTimers = () => {
-    const existingDataFromStorage = localStorage.getItem('timer');
-    let timers = [] as TimerBody[];
-    if (existingDataFromStorage) {
-      timers = JSON.parse(existingDataFromStorage);
-    }
-
-    timers.sort(sortTimers);
-    return timers;
-  }
-
   useEffect(() => {
     const timers = fetchExistingTimers();
-    const orderedTimers = orderByOperationalTime(timers);
+    const todaysTimers = timers.filter(testIfCurrentDay);
+    const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
   }, [])
 
@@ -242,7 +263,8 @@ function App() {
     toAdd.sort(sortTimers)
     toAdd.push(body);
     localStorage.setItem('timer', JSON.stringify(toAdd));
-    const orderedTimers = orderByOperationalTime(toAdd);
+    const todaysTimers = timers.filter(testIfCurrentDay);
+    const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
   }
 
