@@ -48,6 +48,16 @@ const testIfCurrentDay = (timer: TimerBody) => {
   if (timer.repeat) {
     return timer.repeatDays?.[currDay];
   }
+
+  const currHour = currDate.getHours();
+  const currMinute = currDate.getMinutes();
+
+  const { hours, minutes } = getHoursMinutesFromTime(timer.time);
+
+  if (currHour < hours || (currHour === hours && currMinute < minutes)) {
+    return true;
+  }
+
   return false;
 }
 
