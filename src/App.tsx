@@ -260,12 +260,14 @@ const fetchExistingTimers = () => {
 
 function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
+  const [currTimer, setCurrTimer] = useState<TimerBody | null>(null);
 
   useEffect(() => {
     const timers = fetchExistingTimers();
     const todaysTimers = timers.filter(testIfCurrentDay);
     const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
+    setCurrTimer(orderedTimers[0])
   }, [])
 
   const addDialog = (body: TimerBody) => {
@@ -276,13 +278,14 @@ function App() {
     const todaysTimers = timers.filter(testIfCurrentDay);
     const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
+    setCurrTimer(orderedTimers[0])
   }
 
   return (
     <div className="min-h-screen min-w-screen bg-slate-900 justify-center items-center flex flex-col gap-16" >
       <div>
         <h1 className="scroll-m-20 text-9xl font-extrabold tracking-tight text-white">
-          Countdown
+          {currTimer?.name}
         </h1>
       </div>
       <Countdown 
