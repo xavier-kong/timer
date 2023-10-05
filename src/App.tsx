@@ -258,6 +258,21 @@ const fetchExistingTimers = () => {
   return timers;
 }
 
+const findTimeDiffSeconds = (timer: TimerBody) => {
+  const currTime = new Date();
+  const currHour = currTime.getHours();
+  const currMinute = currTime.getMinutes();
+  const currSeconds = currTime.getSeconds();
+
+  const { hours, minutes } = getHoursMinutesFromTime(timer.time);
+
+  const hoursDiff = hours - currHour;
+  const minutesDiff = minutes - currMinute;
+  const secondsDiff = 60 - currSeconds;
+
+  return secondsDiff + (minutesDiff * 60) + (hoursDiff * 60 * 60);
+}
+
 function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
   const [currTimer, setCurrTimer] = useState<TimerBody | null>(null);
@@ -288,10 +303,14 @@ function App() {
           {currTimer?.name}
         </h1>
       </div>
-      <Countdown 
-        date={Date.now() + 10000}
-        renderer={renderer}
-      />
+      {
+        currTimer ? 
+          <Countdown 
+            date={Date.now() + findTimeDiffSeconds(currTimer)}
+            renderer={renderer}
+          />
+          : null
+      }
       <AddCountdownDialog addDialog={addDialog} />
       {JSON.stringify(timers)}
 
