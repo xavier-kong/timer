@@ -258,7 +258,7 @@ const fetchExistingTimers = () => {
   return timers;
 }
 
-const findTimeDiffSeconds = (timer: TimerBody) => {
+const findTimeDiffMilliSeconds = (timer: TimerBody) => {
   const currTime = new Date();
   const currHour = currTime.getHours();
   const currMinute = currTime.getMinutes();
@@ -270,7 +270,7 @@ const findTimeDiffSeconds = (timer: TimerBody) => {
   const minutesDiff = minutes - currMinute;
   const secondsDiff = 60 - currSeconds;
 
-  return secondsDiff + (minutesDiff * 60) + (hoursDiff * 60 * 60);
+  return (secondsDiff + (minutesDiff * 60) + (hoursDiff * 60 * 60)) * 1000;
 }
 
 function App() {
@@ -290,7 +290,7 @@ function App() {
     toAdd.sort(sortTimers)
     toAdd.push(body);
     localStorage.setItem('timer', JSON.stringify(toAdd));
-    const todaysTimers = timers.filter(testIfCurrentDay);
+    const todaysTimers = toAdd.filter(testIfCurrentDay);
     const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
     setCurrTimer(orderedTimers[0])
@@ -306,7 +306,7 @@ function App() {
       {
         currTimer ? 
           <Countdown 
-            date={Date.now() + findTimeDiffSeconds(currTimer)}
+            date={Date.now() + findTimeDiffMilliSeconds(currTimer)}
             renderer={renderer}
           />
           : null
