@@ -293,7 +293,15 @@ function App() {
     const todaysTimers = toAdd.filter(testIfCurrentDay);
     const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
-    setCurrTimer(orderedTimers[0])
+    setCurrTimer(orderedTimers[0]);
+  }
+
+  const onCurrTimerComplete = () => {
+    if (timers.length > 1) {
+      setCurrTimer(timers[1]);
+    } else {
+      setCurrTimer(null);
+    }
   }
 
   return (
@@ -308,6 +316,7 @@ function App() {
           <Countdown 
             date={Date.now() + findTimeDiffMilliSeconds(currTimer)}
             renderer={renderer}
+            onComplete={() => onCurrTimerComplete()}
           />
           : null
       }
