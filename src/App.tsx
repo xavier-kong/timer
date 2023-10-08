@@ -267,7 +267,7 @@ const findTimeDiffMilliSeconds = (timer: TimerBody) => {
   const { hours, minutes } = getHoursMinutesFromTime(timer.time);
 
   const hoursDiff = hours - currHour;
-  const minutesDiff = minutes - currMinute;
+  const minutesDiff = minutes - currMinute - 1;
   const secondsDiff = 60 - currSeconds;
 
   return (secondsDiff + (minutesDiff * 60) + (hoursDiff * 60 * 60)) * 1000;
@@ -297,11 +297,15 @@ function App() {
   }
 
   const onCurrTimerComplete = () => {
-    if (timers.length > 1) {
-      setCurrTimer(timers[1]);
+    const remainingTimers = timers.slice(1);
+
+    if (remainingTimers.length >= 1) {
+      setCurrTimer(remainingTimers[0]);
     } else {
       setCurrTimer(null);
     }
+
+    setTimers(remainingTimers);
   }
 
   return (
@@ -317,6 +321,7 @@ function App() {
             date={Date.now() + findTimeDiffMilliSeconds(currTimer)}
             renderer={renderer}
             onComplete={() => onCurrTimerComplete()}
+            key={currTimer.name}
           />
           : null
       }
