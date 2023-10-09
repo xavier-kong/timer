@@ -310,6 +310,20 @@ function App() {
     localStorage.setItem('timer', JSON.stringify(toKeep));
   }
 
+  const deleteTimer = (timerToDelete: TimerBody) => {
+    const existing = fetchExistingTimers();
+
+    const toKeep = [];
+
+    for (const timer of existing) {
+      if (timerToDelete != timer) {
+        toKeep.push(timer);
+      }
+    }
+
+    localStorage.setItem('timer', JSON.stringify(toKeep));
+  }
+
   const onCurrTimerComplete = () => {
     const remainingTimers = timers.slice(1);
 
