@@ -296,6 +296,20 @@ function App() {
     setCurrTimer(orderedTimers[0]);
   }
 
+  const removePastTimers = () => {
+    const existing = fetchExistingTimers();
+    existing.sort(sortTimers);
+    const toKeep = [];
+
+    for (const timer of existing) {
+      if (timer.repeat || testIfCurrentDay(timer)) {
+        toKeep.push(timer);
+      }
+    }
+
+    localStorage.setItem('timer', JSON.stringify(toKeep));
+  }
+
   const onCurrTimerComplete = () => {
     const remainingTimers = timers.slice(1);
 
@@ -306,6 +320,7 @@ function App() {
     }
 
     setTimers(remainingTimers);
+    removePastTimers();
   }
 
   return (
