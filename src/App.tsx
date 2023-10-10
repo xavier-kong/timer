@@ -79,7 +79,7 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
     <Dialog open={open} onOpenChange={() => { 
       setOpen(!open); 
       clearInput();
-    }}>
+      }}>
       <DialogTrigger asChild onClick={() => setOpen(true)}>
         <Button variant="outline">Add Countdown</Button>
       </DialogTrigger>
@@ -160,7 +160,7 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
             addDialog(body);
             setOpen(false);
             clearInput();
-          }}>Add Countdown</Button>
+            }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -273,7 +273,44 @@ const findTimeDiffMilliSeconds = (timer: TimerBody) => {
   return (secondsDiff + (minutesDiff * 60) + (hoursDiff * 60 * 60)) * 1000;
 }
 
-function App() {
+function UpcomingTimer({ timer }: { timer: TimerBody }) {
+  return (
+    <div className="flex flex-col align-middle justify-center">
+      <p className="text-center">{timer.name}</p>
+      <p className="text-center">{timer.time}</p>
+    </div>
+  )
+}
+
+const removePastTimers = () => {
+  const existing = fetchExistingTimers();
+  existing.sort(sortTimers);
+  const toKeep = [];
+
+  for (const timer of existing) {
+    if (timer.repeat || testIfCurrentDay(timer)) {
+      toKeep.push(timer);
+    }
+  }
+
+  localStorage.setItem('timer', JSON.stringify(toKeep));
+}
+
+const deleteTimer = (timerToDelete: TimerBody) => {
+  const existing = fetchExistingTimers();
+
+  const toKeep = [];
+
+  for (const timer of existing) {
+    if (timerToDelete != timer) {
+      toKeep.push(timer);
+    }
+  }
+
+  localStorage.setItem('timer', JSON.stringify(toKeep));
+}
+
+export default function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
   const [currTimer, setCurrTimer] = useState<TimerBody | null>(null);
 
@@ -294,34 +331,6 @@ function App() {
     const orderedTimers = orderByOperationalTime(todaysTimers);
     setTimers(orderedTimers);
     setCurrTimer(orderedTimers[0]);
-  }
-
-  const removePastTimers = () => {
-    const existing = fetchExistingTimers();
-    existing.sort(sortTimers);
-    const toKeep = [];
-
-    for (const timer of existing) {
-      if (timer.repeat || testIfCurrentDay(timer)) {
-        toKeep.push(timer);
-      }
-    }
-
-    localStorage.setItem('timer', JSON.stringify(toKeep));
-  }
-
-  const deleteTimer = (timerToDelete: TimerBody) => {
-    const existing = fetchExistingTimers();
-
-    const toKeep = [];
-
-    for (const timer of existing) {
-      if (timerToDelete != timer) {
-        toKeep.push(timer);
-      }
-    }
-
-    localStorage.setItem('timer', JSON.stringify(toKeep));
   }
 
   const onCurrTimerComplete = () => {
@@ -355,11 +364,18 @@ function App() {
           : null
       }
       <AddCountdownDialog addDialog={addDialog} />
-      {JSON.stringify(timers)}
 
       <Button onClick={() => { localStorage.removeItem('timer'); setTimers([]); }}>Clear</Button>
+      <div className="justify-center align-middle flex flex-col">
+        <p className="text-center">{"Up Next"}</p>
+        <div>
+          {
+            timers.length >= 2 ?
+              <UpcomingTimer timer={timers[1]} />
+              : "No up coming timers"
+          }
+        </div>
+      </div>
     </div>
   )
 }
-
-export default App
