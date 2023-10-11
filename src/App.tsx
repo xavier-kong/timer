@@ -79,7 +79,7 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
     <Dialog open={open} onOpenChange={() => { 
       setOpen(!open); 
       clearInput();
-      }}>
+    }}>
       <DialogTrigger asChild onClick={() => setOpen(true)}>
         <Button variant="outline">Add Countdown</Button>
       </DialogTrigger>
@@ -160,11 +160,10 @@ function AddCountdownDialog({ addDialog }: { addDialog: (body: TimerBody) => voi
             addDialog(body);
             setOpen(false);
             clearInput();
-            }}>Add Countdown</Button>
+          }}>Add Countdown</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-
   )
 }
 
@@ -310,6 +309,27 @@ const deleteTimer = (timerToDelete: TimerBody) => {
   localStorage.setItem('timer', JSON.stringify(toKeep));
 }
 
+function ShowAllTimersDialog({ timers }) {
+  const [open, setOpen] = useState<boolean>(false);
+
+  return (
+    <Dialog open={open} onOpenChange={() => { 
+      setOpen(!open); 
+    }}>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        <Button variant="outline">Show All Timers</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[550px]">
+        <DialogHeader>
+          <DialogTitle>Add Countdown</DialogTitle>
+        </DialogHeader>
+        <DialogFooter>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export default function App() {
   const [timers, setTimers] = useState<TimerBody[]>([]);
   const [currTimer, setCurrTimer] = useState<TimerBody | null>(null);
@@ -366,6 +386,7 @@ export default function App() {
       <AddCountdownDialog addDialog={addDialog} />
 
       <Button onClick={() => { localStorage.removeItem('timer'); setTimers([]); }}>Clear</Button>
+      <ShowAllTimersDialog timers={timers} />
       <div className="justify-center align-middle flex flex-col">
         <p className="text-center">{"Up Next"}</p>
         <div>
