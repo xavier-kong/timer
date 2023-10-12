@@ -309,7 +309,7 @@ const deleteTimer = (timerToDelete: TimerBody) => {
   localStorage.setItem('timer', JSON.stringify(toKeep));
 }
 
-function ShowAllTimersDialog({ timers }) {
+function ShowAllTimersDialog({ timers }: { timers: TimerBody[] }) {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
@@ -323,6 +323,15 @@ function ShowAllTimersDialog({ timers }) {
         <DialogHeader>
           <DialogTitle>Add Countdown</DialogTitle>
         </DialogHeader>
+        <div className="grid grid-cols-2">
+          {
+            timers.map((timer) => (
+              <div>
+                {JSON.stringify(timer)}
+              </div>
+            ))
+          }
+        </div>
         <DialogFooter>
         </DialogFooter>
       </DialogContent>
