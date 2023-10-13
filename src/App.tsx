@@ -319,15 +319,18 @@ function ShowAllTimersDialog({ timers }: { timers: TimerBody[] }) {
       <DialogTrigger asChild onClick={() => setOpen(true)}>
         <Button variant="outline">Show All Timers</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Countdown</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 w-96">
           {
             timers.map((timer) => (
-              <div>
-                {JSON.stringify(timer)}
+              <div className="bg-white flex flex-col items-center border-red-50 border-2">
+                <div>{timer.name}</div>
+                <div>{timer.time}</div>
+                <div>{timer.repeat}</div>
+                <div>{JSON.stringify(timer.repeatDays)}</div>
               </div>
             ))
           }
