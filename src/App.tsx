@@ -380,7 +380,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen min-w-screen bg-slate-900 justify-center items-center flex flex-col gap-16" >
-      <div>
+      <div className="flex-1">
         <h1 className="scroll-m-20 text-9xl font-extrabold tracking-tight text-white">
           {currTimer?.name}
         </h1>
@@ -395,13 +395,15 @@ export default function App() {
           />
           : null
       }
-      <AddCountdownDialog addDialog={addDialog} />
+      <div className="flex flex-row items-center justify-center">
+        <AddCountdownDialog addDialog={addDialog} />
+        <ShowAllTimersDialog timers={timers} />
+      </div>
 
       <Button onClick={() => { localStorage.removeItem('timer'); setTimers([]); }}>Clear</Button>
-      <ShowAllTimersDialog timers={timers} />
       <div className="justify-center align-middle flex flex-col">
         <p className="text-center">{"Up Next"}</p>
-        <div>
+        <div className="pb-4">
           {
             timers.length >= 2 ?
               <UpcomingTimer timer={timers[1]} />
