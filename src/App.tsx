@@ -380,21 +380,25 @@ export default function App() {
 
   return (
     <div className="min-h-screen min-w-screen bg-slate-900 justify-center items-center flex flex-col gap-16" >
-      <div className="flex-1">
-        <h1 className="scroll-m-20 text-9xl font-extrabold tracking-tight text-white">
-          {currTimer?.name}
-        </h1>
+      <div className="flex-1 items-center flex flex-col">
+        <div className="flex-1 bg-red-800 flex flex-row">
+          <h1 className="scroll-m-20 text-9xl font-extrabold tracking-tight text-white text-center">
+            {currTimer?.name}
+          </h1>
+        </div>
+        <div className="flex-1 bg-green-800">
+          {
+            currTimer ? 
+              <Countdown 
+                date={Date.now() + findTimeDiffMilliSeconds(currTimer)}
+                renderer={renderer}
+                onComplete={() => onCurrTimerComplete()}
+                key={currTimer.name}
+              />
+              : null
+          }
+        </div>
       </div>
-      {
-        currTimer ? 
-          <Countdown 
-            date={Date.now() + findTimeDiffMilliSeconds(currTimer)}
-            renderer={renderer}
-            onComplete={() => onCurrTimerComplete()}
-            key={currTimer.name}
-          />
-          : null
-      }
       <div className="flex flex-row items-center justify-center">
         <AddCountdownDialog addDialog={addDialog} />
         <ShowAllTimersDialog timers={timers} />
